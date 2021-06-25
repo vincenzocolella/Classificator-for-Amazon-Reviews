@@ -1,61 +1,53 @@
 #$ scrapy runspider webscraper_amazon.py -o reviews.csv
-#$scrapy runspider webscraper_amazon.py -o reviews.json
 
-# Importing Scrapy Library
+#$scrapy runspider webscraper_amazon.py -s USER_AGENT="Mozilla/5.0 (Windows NT 6.1; WOW64)/AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36" /-s ROBOTSTXT_OBEY=False
+
+# Importazione della libreria scrapy
 import scrapy
  
-# Creating a new class to implement Spide
+# Creazione della classe per l'implementazione dello spider
 class AmazonReviewsSpider(scrapy.Spider):
      
-    # Spider name
+    # nome Spider
     name = 'amazon_reviews'
      
     # Domain names to scrape
     allowed_domains = ['amazon.it']
      
-    # Base URL for the World Tech Toys Elite Mini Orion Spy Drone
-    myBaseUrl = "https://www.amazon.it/product-reviews/B06XFWPXYD/ref=cm_cr_arp_d_viewopt_sr?pageNumber="
+    # Base URL - link alla SD Card 
+    myBaseUrl = "https://www.amazon.it/product-reviews/B06XFS5657/ref=cm_cr_arp_d_viewopt_sr?pageNumber="
     start_urls=[]
     
-    # Creating list of urls to be scraped by appending page number a the end of base url
-    pages = 100 #how many pages to scrape
-    for i in range(1,pages): #proviamo a scrap abbastanza recensioni di tutti i tipi
-        if i<=1/5*pages:
-            start_urls.append(myBaseUrl+str(i)+"&filterByStar=one_star")
-        elif i>=1/5*pages and i<2/5*pages:
-            start_urls.append(myBaseUrl+str(i)+"&filterByStar=two_star")
-        elif i>=2/5*pages and i<3/5*pages:
-            start_urls.append(myBaseUrl+str(i)+"&filterByStar=three_star")
-        elif i>3/5*pages:
-            start_urls.append(myBaseUrl+str(i)+"&filterByStar=four_star")
-        elif i>3/5*pages:
-            start_urls.append(myBaseUrl+str(i)+"&filterByStar=five_star")
+
+    # Si crea una lista di urls aggiungendo il suffisso 'pagina numero ...' al link base
+    pagine = 500 #how many pages to scrape
+    for i in range(1,pagine):
+        start_urls.append(myBaseUrl+str(i)+'&filterByStar=critical')
     
-    # Defining a Scrapy parser
+    # Definizione del parser Scrapy
     def parse(self, response):
-            #Get the Review List
+
+            # Estrazione della lista di recensioni
             data = response.css('#cm_cr-review_list')
             
-            #Get the Name
-            name = data.css('.a-profile-name')
-            
-            #Get the Review Title
+            # Estrazione del titolo della recensione
             title = data.css('.review-title')
             
-            # Get the Ratings
+            # Estrazione delle stelle (tag)
             star_rating = data.css('.review-rating')
             
-            # Get the users Comments
+            # Estrazione del testo della recensione
             description = data.css('.review-text')
-            count = 0
-             
-            # combining the results
+
+            count=0
+
+            # unione dei risulati
             for review in star_rating:
                 
-                yield{'Name':''.join(name[count].xpath(".//text()").extract()),
+                    yield{
                       'Title':''.join(title[count].xpath(".//text()").extract()),
                       'Rating': ''.join(review.xpath('.//text()').extract()),
                       'Description': ''.join(description[count].xpath(".//text()").extract())
                      }
-                count=count+1
+                    count= count+1
                 

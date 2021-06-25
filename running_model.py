@@ -1,9 +1,11 @@
 from monkeylearn import MonkeyLearn
 
+#si identifica l'id dell'account e l'id del modello
+ml = MonkeyLearn('b9cd35aea191606096c365fdabe323e4015ff8e2')
+model_id = 'cl_7YpXVee3'
 
-ml = MonkeyLearn('9392f02bd5fe5580760e747c435a3e312cdfba90')
-#data = input('Cosa analizzare:')
-data = ["Pessimo dispositivo consegna veloce."] #qui le cose da analizzare
-model_id = 'cl_KmXWgjBD'
+#nella lista "data" si inseriscono gli elementi da analizzare 
+data = ["",""]
+
 result = ml.classifiers.classify(model_id, data)
 print(result.body)
